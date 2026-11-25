@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LapinMarket – Achetez et vendez des lapins</title>
+  <meta name="description" content="Petites annonces de lapins : race, poids, photos et vidéos. Contactez les éleveurs directement sur WhatsApp.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="logo" href="#">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><use href="#rabbit"/></svg>
+      LapinMarket
+    </a>
+    <nav class="header-actions">
+      <button class="btn btn-ghost" id="btn-account" type="button">Devenir vendeur</button>
+      <button class="btn btn-solid" id="btn-add" type="button">Publier une annonce</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Le bon lapin, directement chez l’éleveur.</h1>
+        <p>Comparez les races et les poids, regardez les photos et les vidéos, puis écrivez au vendeur sur WhatsApp.</p>
+        <form class="hero-search" id="hero-search" role="search">
+          <input id="q" type="search" placeholder="Race, ville ou vendeur" aria-label="Rechercher">
+          <button class="btn btn-solid" type="submit">Rechercher</button>
+        </form>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 48 48"><use href="#rabbit"/></svg>
+        <p class="hero-count"><strong id="count-listings">0</strong> annonces<br><strong id="count-sellers">0</strong> vendeurs</p>
+      </div>
+    </section>
+
+    <!-- FILTRES -->
+    <section class="filters" aria-label="Filtres">
+      <label>Race
+        <select id="f-breed"><option value="">Toutes les races</option></select>
+      </label>
+      <label>Poids min (kg)
+        <input id="f-wmin" type="number" min="0" step="0.1" placeholder="0">
+      </label>
+      <label>Poids max (kg)
+        <input id="f-wmax" type="number" min="0" step="0.1" placeholder="10">
+      </label>
+      <label>Trier par
+        <select id="f-sort">
+          <option value="new">Plus récentes</option>
+          <option value="price-asc">Prix croissant</option>
+          <option value="price-desc">Prix décroissant</option>
+          <option value="weight-desc">Poids décroissant</option>
+        </select>
+      </label>
+    </section>
+
+    <!-- ANNONCES -->
+    <section aria-live="polite">
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" hidden>
+        <h2>Aucune annonce pour l’instant</h2>
+        <p>Publiez la première : ajoutez une photo, la race et le poids de votre lapin.</p>
+        <button class="btn btn-solid" type="button" id="btn-add-empty">Publier une annonce</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>LapinMarket met en relation acheteurs et éleveurs. Les échanges et les paiements se font directement entre vous.</p>
+  </footer>
+
+  <!-- DIALOGUE : INSCRIPTION VENDEUR -->
+  <dialog id="dlg-seller">
+    <form id="form-seller" method="dialog" novalidate>
+      <h2>Devenir vendeur</h2>
+      <p class="hint">Ces informations sont affichées sur vos annonces. Les acheteurs vous écrivent sur WhatsApp.</p>
+      <label>Nom ou nom de l’élevage
+        <input name="name" maxlength="50" required autocomplete="name">
+      </label>
+      <label>Numéro WhatsApp
+        <input name="wa" type="tel" placeholder="+228 92020152" required autocomplete="tel">
+      </label>
+      <label>Ville
+        <input name="city" maxlength="40" required autocomplete="address-level2">
+      </label>
+      <p class="error" data-error></p>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" type="button" data-close>Annuler</button>
+        <button class="btn btn-solid" type="submit">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- DIALOGUE : NOUVELLE ANNONCE -->
+  <dialog id="dlg-listing">
+    <form id="form-listing" method="dialog" novalidate>
+      <h2>Publier une annonce</h2>
+      <label>Titre
+        <input name="title" maxlength="80" placeholder="Ex : Mâle Géant des Flandres" required>
+      </label>
+      <div class="row">
+        <label>Race
+          <input name="breed" maxlength="50" list="breeds" placeholder="Géant des Flandres" required>
+          <datalist id="breeds">
+            <option>Géant des Flandres</option><option>Fauve de Bourgogne</option>
+            <option>Californien</option><option>Néo-Zélandais</option>
+            <option>Bélier nain</option><option>Nain de couleur</option>
+            <option>Angora</option><option>Rex</option><option>Chinchilla</option>
+          </datalist>
+        </label>
+        <label>Poids (kg)
+          <input name="weight" type="number" min="0" step="0.1" required>
+        </label>
+      </div>
+      <div class="row">
+        <label>Prix (F CFA)
+          <input name="price" type="number" min="0" step="1" required>
+        </label>
+        <label>Âge (facultatif)
+          <input name="age" maxlength="30" placeholder="3 mois">
+        </label>
+      </div>
+      <label>Description
+        <textarea name="desc" rows="3" maxlength="600" placeholder="Vacciné, sociable, issu d’un élevage familial…"></textarea>
+      </label>
+      <label>Photos (4 maximum)
+        <input name="photos" type="file" accept="image/*" multiple>
+      </label>
+      <label>Vidéo (50 Mo maximum)
+        <input name="video" type="file" accept="video/*">
+      </label>
+      <p class="error" data-error></p>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" type="button" data-close>Annuler</button>
+        <button class="btn btn-solid" type="submit">Publier</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <!-- Logo lapin réutilisable -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="rabbit" viewBox="0 0 48 48">
+      <ellipse cx="19" cy="12" rx="3.6" ry="10" fill="currentColor"/>
+      <ellipse cx="29" cy="12" rx="3.6" ry="10" fill="currentColor" transform="rotate(8 29 12)"/>
+      <circle cx="24" cy="26" r="11" fill="currentColor"/>
+      <ellipse cx="24" cy="41" rx="14" ry="6.5" fill="currentColor"/>
+      <circle cx="20" cy="25" r="1.7" fill="var(--cream)"/>
+      <circle cx="28" cy="25" r="1.7" fill="var(--cream)"/>
+    </symbol>
+  </svg>
+
+  <script src="script.js"></script>
+</body>
+</html>
